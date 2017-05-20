@@ -13,13 +13,17 @@ import com.vcola.util.Global;
 
 public class Snake {
 	
-	// 当前运动方向
-	private int oldDirection, newDirection;
-	
 	public static final int UP = 1;
 	public static final int DOWN = -1;
 	public static final int LEFT = 2;
 	public static final int RIGHT = -2;
+	
+	// 当前运动方向
+	private int oldDirection, newDirection;
+	
+	private Point oldTail;
+	
+	private boolean alive;
 	
 	private LinkedList<Point> body = new LinkedList<Point>();
 	
@@ -35,9 +39,8 @@ public class Snake {
 		for(int i=0 ; i<3 ; i++){
 			body.addLast(new Point(x--, y));
 		}
-		
 		oldDirection = newDirection = RIGHT;
-		
+		alive = true;
 	}
 	
 	public void move(){
@@ -45,7 +48,7 @@ public class Snake {
 			oldDirection = newDirection;
 		}	
 		// 去除尾部
-		body.removeLast();
+		oldTail = body.removeLast();
 		// 加入头部 根据当前方向
 		int x = body.getFirst().x;
 		int y = body.getFirst().y;
@@ -77,9 +80,6 @@ public class Snake {
 		}
 		Point newHead = new Point(x, y);
 		body.addFirst(newHead);
-		
-		
-		
 	}
 	
 	public void changeDirection(int direction){
@@ -88,10 +88,15 @@ public class Snake {
 
 	public void eatFood(){
 		System.out.println("Snake eatFood");
+		body.addLast(oldTail);
 	}
 	
 	public boolean isEatBody(){
-		System.out.println("Snake isEatBody");
+		for(int i=1 ; i<body.size() ; i++){
+			if(body.get(i).equals(getHead())){
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -116,20 +121,38 @@ public class Snake {
 	private class SnakeDriver implements Runnable{
 		@Override
 		public void run() {
-			while(true){
+			while(alive){
 				move();
 				for(SnakeListener snakeListener : snakeListeners){
 					snakeListener.snakeMoved(Snake.this);
 				}
 				try {
 					// 蛇移动的速度
-					TimeUnit.SECONDS.sleep(1L);
+					TimeUnit.MILLISECONDS.sleep(300L);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		
+	}
+
+	public Point getHead() {
+		return body.getFirst();
+	}
+	
+	public void die() {
+		System.out.println("snake is die");
+		this.alive = false;
+	}
+	
+	public boolean isBody(Point p){
+		for(Point bodyPoint : body){
+			if(p.equals(bodyPoint)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

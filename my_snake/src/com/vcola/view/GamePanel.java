@@ -18,10 +18,10 @@ public class GamePanel extends JPanel {
 	private Ground ground;
 
 	public void display(Snake snake, Food food, Ground ground) {
+		System.out.println("GamePanel display");
 		this.snake = snake;
 		this.food = food;
 		this.ground = ground;
-		System.out.println("GamePanel display");
 		// 会调用paintComponent方法
 		this.repaint();
 	}
@@ -33,9 +33,9 @@ public class GamePanel extends JPanel {
 				Global.HEIGHT * Global.CELL_SIZE, true);
 		// 重新显示
 		if(ground != null && snake != null && food != null){
-			ground.drawMe();
+			ground.drawMe(g);
 			snake.drawMe(g);
-			food.drawMe();
+			food.drawMe(g);
 		}
 	}
 
